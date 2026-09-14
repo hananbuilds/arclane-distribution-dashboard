@@ -8,9 +8,8 @@ Fictional portfolio project, built to demonstrate a data audit, cleaning, and da
 
 ## Screenshots
 
-<!-- Add screenshots to a /screenshots folder and reference them here, e.g.: -->
-<!-- ![Desktop overview](screenshots/desktop-overview.png) -->
-<!-- ![Mobile view](screenshots/mobile-view.png) -->
+<!-- ![Desktop overview](arclanedesktop-overview)
+<!-- ![Mobile view](arclanemobile-overview) 
 
 ## Overview
 
