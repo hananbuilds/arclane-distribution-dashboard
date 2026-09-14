@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArcLane Distribution — Operational Command Center | VELYNT</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="tooltip" role="tooltip"></div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-name">ARCLANE DISTRIBUTION</div>
+      <div class="brand-sub">OPERATIONAL COMMAND CENTER</div>
+    </div>
+    <div class="topbar-controls">
+      <button class="mobile-filters-btn" id="mobileFiltersBtn" aria-label="Open filters">⚙ Filters</button>
+
+      <div class="dropdown" id="dateDropdown">
+        <button class="filter-chip" id="dateChipBtn" aria-haspopup="true" aria-expanded="false">📅 <span id="dateChipLabel">Full Year 2025</span></button>
+        <div class="dropdown-panel" id="datePanel" role="menu"></div>
+      </div>
+
+      <div class="dropdown" id="warehouseDropdown">
+        <button class="filter-chip" id="warehouseChipBtn" aria-haspopup="true" aria-expanded="false">🏭 Warehouse <span class="chip-count" id="warehouseCount" style="display:none;"></span></button>
+        <div class="dropdown-panel" id="warehousePanel" role="menu"></div>
+      </div>
+
+      <div class="dropdown" id="carrierDropdown">
+        <button class="filter-chip" id="carrierChipBtn" aria-haspopup="true" aria-expanded="false">🚚 Carrier <span class="chip-count" id="carrierCount" style="display:none;"></span></button>
+        <div class="dropdown-panel" id="carrierPanel" role="menu"></div>
+      </div>
+
+      <button class="reset-btn" id="resetBtn">✕ Reset</button>
+
+      <div class="refresh-block">
+        <span class="last-updated" id="lastUpdated">Updated as of —</span>
+        <button class="refresh-btn" id="refreshBtn"><span class="refresh-icon">⟳</span> <span id="refreshLabel">Refresh</span></button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div id="app">
+<div id="liveDataOverlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(8,12,20,0.88);align-items:center;justify-content:center;"></div>
+<main id="main">
+
+  <!-- ============ S-01 EXECUTIVE PULSE ============ -->
+  <section class="section" id="s01" aria-labelledby="s01-title">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title" id="s01-title">Executive Pulse</h2>
+        <p class="section-desc">What's happening — the six headline numbers, no interaction required.</p>
+      </div>
+    </div>
+    <div class="grid12">
+      <div class="hero-banner" id="heroBanner">
+        <div class="hero-main">
+          <div class="hero-label" id="heroLabel">NET ORDER VALUE <span style="font-weight:400;">(excl. cancelled)</span></div>
+          <div class="hero-number tabular" id="heroNumber">—</div>
+          <div class="hero-sub" id="heroSub">Booked order value — not recognized revenue</div>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-pill"><div class="stat-pill-label">AVG TRANSIT TIME</div><div class="stat-pill-value tabular" id="statTransit">—</div></div>
+          <div class="stat-pill"><div class="stat-pill-label">TOTAL FREIGHT COST</div><div class="stat-pill-value tabular" id="statFreight">—</div></div>
+        </div>
+      </div>
+      <div class="kpi-card row-gap" tabindex="0">
+        <div class="kpi-label">TOTAL ORDERS</div>
+        <div class="kpi-number tabular" id="kpiOrders">—</div>
+      </div>
+      <div class="kpi-card row-gap" tabindex="0">
+        <div class="kpi-label">FULFILLMENT RATE</div>
+        <div class="kpi-number tabular" id="kpiFulfillment">—</div>
+      </div>
+      <div class="kpi-card row-gap" tabindex="0">
+        <div class="kpi-label">ON-TIME DELIVERY RATE</div>
+        <div class="kpi-number tabular" id="kpiOnTime">—</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S-02 PERFORMANCE COMMAND CENTER ============ -->
+  <section class="section" id="s02" aria-labelledby="s02-title">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title" id="s02-title">Performance Command Center</h2>
+        <p class="section-desc">Is it getting better or worse — order value and on-time rate over time.</p>
+      </div>
+    </div>
+    <div class="grid12">
+      <div class="panel trend-panel">
+        <div class="panel-title">Business Pulse Trend <span class="hint">bars = order value · line = on-time %</span></div>
+        <div id="trendChart"></div>
+      </div>
+      <div class="panel insight-panel">
+        <div class="panel-title">Performance Insights</div>
+        <div id="insightPanel"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S-03 FULFILLMENT & DELIVERY ============ -->
+  <section class="section" id="s03" aria-labelledby="s03-title">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title" id="s03-title">Fulfillment &amp; Delivery</h2>
+        <p class="section-desc">Where in the process orders and shipments actually stand.</p>
+      </div>
+    </div>
+    <div class="grid12">
+      <div class="panel status-panel">
+        <div class="panel-title">Shipment Status Mix by Month</div>
+        <div class="priority-inline" id="priorityFilter"></div>
+        <div id="statusChart"></div>
+      </div>
+      <div class="metrics-col">
+        <div class="panel">
+          <div class="panel-title">Transit Time <span class="hint">valid chronology only</span></div>
+          <div class="paired-stat">
+            <div class="paired-stat-item"><div class="paired-stat-value tabular" id="transitAvg">—</div><div class="paired-stat-label">AVERAGE (DAYS)</div></div>
+            <div class="paired-stat-item"><div class="paired-stat-value tabular" id="transitMedian">—</div><div class="paired-stat-label">MEDIAN (DAYS)</div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Fulfillment Cross-Check</div>
+          <div class="paired-stat">
+            <div class="paired-stat-item"><div class="paired-stat-value tabular" id="crossFulfillment">—</div><div class="paired-stat-label">STATUS-BASED</div></div>
+            <div class="paired-stat-item"><div class="paired-stat-value tabular" id="crossLinked">—</div><div class="paired-stat-label">SHIPMENT-LINKED</div></div>
+          </div>
+          <button class="diag-toggle" id="diagToggle" style="margin-top:10px;">Show diagnostic ratio (K-18)</button>
+          <div class="diag-value" id="diagValue"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Damage Rate by Status</div>
+          <div class="mini-bars" id="damageBars"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S-04 NETWORK PERFORMANCE ============ -->
+  <section class="section" id="s04" aria-labelledby="s04-title">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title" id="s04-title">Network Performance</h2>
+        <p class="section-desc">Which carriers and warehouses are strong, and which need attention.</p>
+      </div>
+    </div>
+    <div class="grid12">
+      <div class="panel quadrant-panel">
+        <div class="panel-title">Carrier Cost vs. Reliability <span class="hint">bubble size = shipment volume · click to isolate</span></div>
+        <div id="quadrantChart"></div>
+      </div>
+      <div class="panel scorecard-panel row-gap">
+        <div class="panel-title">Carrier Scorecard</div>
+        <div class="table-scroll" id="carrierTable"></div>
+      </div>
+      <div class="panel scorecard-panel row-gap">
+        <div class="panel-title">Warehouse Scorecard</div>
+        <div class="table-scroll" id="warehouseTable"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S-05 INVENTORY HEALTH ============ -->
+  <section class="section" id="s05" aria-labelledby="s05-title">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title" id="s05-title">Inventory Health</h2>
+        <p class="section-desc" id="s05-desc">Where value sits and what's at risk of stocking out — December 2025 snapshot.</p>
+      </div>
+    </div>
+    <div class="grid12">
+      <div class="panel inv-panel">
+        <div class="panel-title">Inventory Value by Warehouse</div>
+        <div id="invWarehouseChart"></div>
+      </div>
+      <div class="panel inv-panel">
+        <div class="panel-title">Inventory Value by Category</div>
+        <div class="table-scroll" id="invCategoryTable"></div>
+      </div>
+      <div class="panel inv-panel">
+        <div class="panel-title">Stockout Risk <span class="hint" id="stockoutRate">—</span></div>
+        <div class="table-scroll" id="stockoutTable"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S-06 CUSTOMER CONTRIBUTION ============ -->
+  <section class="section" id="s06" aria-labelledby="s06-title">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title" id="s06-title">Customer Contribution</h2>
+        <p class="section-desc">Top order value by customer — linked orders only.</p>
+      </div>
+    </div>
+    <div class="grid12">
+      <div class="panel customer-panel">
+        <div class="panel-title">
+          Top Customers by Order Value
+          <input type="search" class="search-input" id="customerSearch" placeholder="Search customer…" aria-label="Search customers">
+        </div>
+        <div class="table-scroll" id="customerTable"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S-07 EXCEPTIONS & DATA QUALITY ============ -->
+  <section class="section" id="s07" aria-labelledby="s07-title">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title" id="s07-title">Exceptions &amp; Data Quality</h2>
+      </div>
+    </div>
+    <div class="grid12">
+      <div class="dq-strip">
+        <div class="dq-summary" id="dqSummary" role="button" tabindex="0" aria-expanded="false">
+          <div class="dq-summary-text" id="dqSummaryText">Loading…</div>
+          <button class="dq-expand-btn" id="dqExpandBtn">Expand</button>
+        </div>
+        <div class="dq-tiles" id="dqTiles"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<footer class="velynt-footer">
+  ArcLane Distribution is a fictional VELYNT portfolio demonstration. Figures shown are derived from the validated Clean_* workbook (Stage 3/4) under the Stage 5 KPI framework — no invented data, targets, or comparisons.
+</footer>
+
+<nav class="jumpnav" aria-label="Jump to section">
+  <a href="#s01">Pulse</a>
+  <a href="#s02">Trends</a>
+  <a href="#s03">Fulfillment</a>
+  <a href="#s04">Network</a>
+  <a href="#s05">Inventory</a>
+  <a href="#s06">Customers</a>
+  <a href="#s07">Exceptions</a>
+</nav>
+
+<div class="mobile-sheet" id="mobileSheet">
+  <div class="mobile-sheet-panel" role="dialog" aria-modal="true" aria-label="Filters">
+    <div class="mobile-sheet-header"><h3>Filters</h3><button class="mobile-sheet-close" id="mobileSheetClose" aria-label="Close filters">✕</button></div>
+    <div class="mobile-sheet-section"><h4>Date Range</h4><div id="mobileDatePanel"></div></div>
+    <div class="mobile-sheet-section"><h4>Warehouse</h4><div id="mobileWarehousePanel"></div></div>
+    <div class="mobile-sheet-section"><h4>Carrier</h4><div id="mobileCarrierPanel"></div></div>
+    <button class="reset-btn visible" id="mobileResetBtn" style="width:100%;justify-content:center;margin-top:8px;">✕ Reset All Filters</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
