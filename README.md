@@ -8,8 +8,8 @@ Fictional portfolio project, built to demonstrate a data audit, cleaning, and da
 
 ## Screenshots
 
-<!-- ![Desktop overview](arclanedesktop-overview.png) -->
-<!-- ![Mobile view](arclanemobile-overview.png) -->
+![Desktop overview](arclanedesktop-overview.png)
+![Mobile view](arclanemobile-overview.png)
 
 ## Overview
 
